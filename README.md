@@ -4,12 +4,13 @@ A decentralized digital skill certification platform built on Stacks blockchain 
 
 ## Overview
 
-SkillMint revolutionizes educational credentialing by providing a tamper-proof, blockchain-based system for issuing and verifying skill certificates. Institutions can register, get verified, and issue certificates that recipients truly own and can verify independently.
+SkillMint revolutionizes educational credentialing by providing a tamper-proof, blockchain-based system for issuing and verifying skill certificates. Institutions can register, get verified, and issue certificates individually or in batches that recipients truly own and can verify independently.
 
 ## Features
 
 - **Institution Registration**: Educational institutions can register and get verified on the platform
 - **Certificate Issuance**: Verified institutions can issue digital certificates for various skills
+- **Batch Certificate Issuance**: Issue multiple certificates in a single transaction for graduation ceremonies or course completions
 - **Skill Registry**: Centralized registry of recognized skills and categories
 - **Certificate Verification**: Public verification of certificate authenticity
 - **User Portfolio**: Each user maintains a permanent portfolio of their certificates
@@ -24,12 +25,14 @@ SkillMint revolutionizes educational credentialing by providing a tamper-proof, 
 - `get-user-certificates(user)` - Get all certificates for a user
 - `get-skill-info(skill-name)` - Get skill category and statistics
 - `verify-certificate(certificate-id)` - Check if certificate is valid
+- `get-certificate-counter()` - Get the current certificate counter
 
 ### Public Functions
 - `register-institution(name)` - Register as an educational institution
 - `verify-institution(institution)` - Verify an institution (admin only)
 - `register-skill(skill-name, category)` - Register a new skill (admin only)
-- `issue-certificate(recipient, skill-name, skill-level, expiry-date)` - Issue a certificate
+- `issue-certificate(recipient, skill-name, skill-level, expiry-date)` - Issue a single certificate
+- `issue-batch-certificates(certificates-data)` - Issue multiple certificates in one transaction
 - `revoke-certificate(certificate-id)` - Revoke a certificate
 
 ## Installation
@@ -44,7 +47,23 @@ SkillMint revolutionizes educational credentialing by providing a tamper-proof, 
 ### For Institutions
 1. Register your institution using `register-institution`
 2. Wait for admin verification
-3. Issue certificates to students using `issue-certificate`
+3. Issue individual certificates using `issue-certificate`
+4. Issue multiple certificates for graduation ceremonies using `issue-batch-certificates`
+
+### Batch Certificate Issuance
+The `issue-batch-certificates` function allows institutions to issue up to 20 certificates in a single transaction, perfect for:
+- Graduation ceremonies
+- Course completion batches
+- Training program certifications
+- Workshop completions
+
+**Example batch data format:**
+```clarity
+(list 
+  {recipient: 'SP..., skill-name: "Web Development", skill-level: "intermediate", expiry-date: (some u1000000)}
+  {recipient: 'SP..., skill-name: "Data Science", skill-level: "advanced", expiry-date: none}
+)
+```
 
 ### For Students
 1. Receive certificates from verified institutions
@@ -69,15 +88,37 @@ SkillMint revolutionizes educational credentialing by providing a tamper-proof, 
 - Verification status
 - Total certificates issued
 
+### Batch Certificate Data
+- List of certificate objects (max 20 per batch)
+- Each containing recipient, skill-name, skill-level, and optional expiry-date
+
 ## Security Features
 
 - Only verified institutions can issue certificates
 - Institution verification requires admin approval
 - Certificates are immutable once issued
 - Revocation system for emergency situations
+- Comprehensive input validation for all functions
+- Batch size limits to prevent resource exhaustion
+- Overflow protection for certificate counters
+
+## Error Codes
+
+- `u100` - Unauthorized operation
+- `u101` - Certificate not found
+- `u102` - Already certified
+- `u103` - Invalid institution
+- `u104` - Invalid skill
+- `u105` - List overflow
+- `u106` - Invalid recipient
+- `u107` - Invalid expiry date
+- `u108` - Invalid parameters
+- `u109` - Empty batch
+- `u110` - Batch too large
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Submit a pull request with clear description
+
